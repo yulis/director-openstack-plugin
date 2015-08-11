@@ -6,10 +6,18 @@ import java.util.Map;
 import com.cloudera.director.spi.v1.compute.util.AbstractComputeProvider;
 import com.cloudera.director.spi.v1.model.Configured;
 import com.cloudera.director.spi.v1.model.InstanceState;
+import com.cloudera.director.spi.v1.model.LocalizationContext;
 import com.cloudera.director.spi.v1.model.Resource.Type;
+import com.cloudera.director.spi.v1.provider.ResourceProviderMetadata;
 
 public class NovaProvider 
 	extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
+
+	public NovaProvider(Configured configuration, ResourceProviderMetadata providerMetadata,
+			LocalizationContext localizationContext) {
+		super(configuration, providerMetadata, localizationContext);
+		// TODO Auto-generated constructor stub
+	}
 
 	public Map<String, InstanceState> getInstanceState(
 			NovaInstanceTemplate arg0, Collection<String> arg1) {
