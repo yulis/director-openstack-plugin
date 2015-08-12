@@ -4,8 +4,9 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 
+import org.jclouds.openstack.nova.v2_0.domain.Server;
+
 import com.cloudera.director.spi.v1.compute.util.AbstractComputeInstance;
-import com.cloudera.director.spi.v1.model.Instance;
 import com.cloudera.director.spi.v1.util.DisplayPropertiesUtil;
 import com.cloudera.director.spi.v1.model.DisplayProperty;
 import com.cloudera.director.spi.v1.model.DisplayPropertyToken;
@@ -15,7 +16,7 @@ import com.cloudera.director.spi.v1.model.DisplayPropertyToken;
  * Nova compute instance.
  */
 public class NovaInstance 
-	extends AbstractComputeInstance<NovaInstanceTemplate, Instance>{
+	extends AbstractComputeInstance<NovaInstanceTemplate, Server>{
 	
 	/**
 	 * The list of display properties (including inherited properties).
