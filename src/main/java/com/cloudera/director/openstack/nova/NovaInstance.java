@@ -39,9 +39,14 @@ public class NovaInstance
 		 * The display property.
 		 */
 		private final DisplayProperty displayProperty;
+		/**
+		 * Create an Nova instance display property token with the specified parameters.
+		 * @param displayProperty the display property
+		 */
 		private NovaInstanceDisplayPropertyToken(DisplayProperty displayProperty) {
 			this.displayProperty = displayProperty;
 		}
+		//protected abstract String getPropertyValue(Instance instance);
 		public DisplayProperty unwrap() {
 			// TODO Auto-generated method stub
 			return displayProperty;
