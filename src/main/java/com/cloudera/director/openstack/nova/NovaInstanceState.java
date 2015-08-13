@@ -23,11 +23,11 @@ public class NovaInstanceState extends AbstractInstanceState<Status> {
 	
 	static {
 		Map<Status, NovaInstanceState> map = Maps.newEnumMap(Status.class);
-		addInstance(map,Status.BUILD, InstanceStatus.PENDING);
-		addInstance(map,Status.ACTIVE, InstanceStatus.RUNNING);
-		addInstance(map,Status.SHUTOFF, InstanceStatus.STOPPED);
-		addInstance(map,Status.DELETED, InstanceStatus.DELETED);
-		addInstance(map,Status.UNKNOWN, InstanceStatus.UNKNOWN);
+		addInstanceState(map,Status.BUILD, InstanceStatus.PENDING);
+		addInstanceState(map,Status.ACTIVE, InstanceStatus.RUNNING);
+		addInstanceState(map,Status.SHUTOFF, InstanceStatus.STOPPED);
+		addInstanceState(map,Status.DELETED, InstanceStatus.DELETED);
+		addInstanceState(map,Status.UNKNOWN, InstanceStatus.UNKNOWN);
 		INSTANCE_STATE_MAP = Collections.unmodifiableMap(map);
 		
 	}
@@ -51,7 +51,7 @@ public class NovaInstanceState extends AbstractInstanceState<Status> {
 	 * @param instanceStateName   the Nova instance state name
 	 * @param instanceStatus      the corresponding instance status
 	 */
-	private static void addInstance(Map<Status, NovaInstanceState> map,
+	private static void addInstanceState(Map<Status, NovaInstanceState> map,
 			Status instanceStateName, InstanceStatus instanceStatus) {
 		map.put(instanceStateName, new NovaInstanceState(instanceStatus, instanceStateName));
 	}
