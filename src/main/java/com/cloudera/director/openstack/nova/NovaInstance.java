@@ -54,6 +54,9 @@ public class NovaInstance
 		}
 		
 	}
+	
+	public static final Type TYPE = new ResourceType("NovaInstance");	
+	
 	protected NovaInstance(NovaInstanceTemplate template, String instanceId,
 			InetAddress privateIpAddress) {
 		super(template, instanceId, privateIpAddress);
