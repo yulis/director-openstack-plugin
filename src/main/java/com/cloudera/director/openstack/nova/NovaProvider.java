@@ -1,22 +1,62 @@
 package com.cloudera.director.openstack.nova;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cloudera.director.openstack.OpenStackCredentials;
 import com.cloudera.director.spi.v1.compute.util.AbstractComputeProvider;
+import com.cloudera.director.spi.v1.model.ConfigurationProperty;
 import com.cloudera.director.spi.v1.model.Configured;
 import com.cloudera.director.spi.v1.model.InstanceState;
 import com.cloudera.director.spi.v1.model.LocalizationContext;
 import com.cloudera.director.spi.v1.model.Resource.Type;
 import com.cloudera.director.spi.v1.provider.ResourceProviderMetadata;
+import com.cloudera.director.spi.v1.provider.util.SimpleResourceProviderMetadata;
+import com.cloudera.director.spi.v1.util.ConfigurationPropertiesUtil;
+import com.typesafe.config.Config;
 
-public class NovaProvider 
-	extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
+public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
 
-	public NovaProvider(Configured configuration, ResourceProviderMetadata providerMetadata,
-			LocalizationContext localizationContext) {
-		super(configuration, providerMetadata, localizationContext);
-		// TODO Auto-generated constructor stub
+	@SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
+	
+	/**
+	 * The provider configuration properties.
+	 */	
+	protected static final List<ConfigurationProperty> CONFIGURATION_PROPERTIES =
+			ConfigurationPropertiesUtil.asConfigurationPropertyList(
+					NovaProviderConfigurationProperty.values());
+	
+	/**
+	 * The resource provider ID.
+	 */
+	public static final String ID = NovaProvider.class.getCanonicalName();
+	
+	/**
+	 * The resource provider metadata.
+	 */
+	public static final ResourceProviderMetadata METADATA = SimpleResourceProviderMetadata.builder()
+		.id(ID)
+		.name("Nova")
+	    .description("OpenStack Nova compute provider")
+	    .providerClass(NovaProvider.class)
+	    .providerConfigurationProperties(CONFIGURATION_PROPERTIES)
+	    .resourceTemplateConfigurationProperties(NovaInstanceTemplate.getConfigurationProperties())
+	    .resourceDisplayProperties(NovaInstance.getDisplayProperties())
+	    .build();
+	
+	 private OpenStackCredentials credentials;
+	 private Config openstackConfig;
+	
+	public NovaProvider(Configured configuration, OpenStackCredentials credentials,
+			Config openstackConfig, LocalizationContext localizationContext) {
+		super(configuration, METADATA, localizationContext);
+		this.credentials = credentials;
+		this.openstackConfig = openstackConfig;
 	}
 
 	public Map<String, InstanceState> getInstanceState(
@@ -50,7 +90,6 @@ public class NovaProvider
 	}
 
 	public Type getResourceType() {
-		// TODO Auto-generated method stub
-		return null;
+		return NovaInstance.TYPE;
 	}
 }
