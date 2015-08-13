@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.jclouds.ContextBuilder;
+import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,8 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 
 	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
+	
+	private static final String novaProvider = "openstack-nova";
 	
 	/**
 	 * The provider configuration properties.
@@ -51,13 +55,30 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 	
 	 private OpenStackCredentials credentials;
 	 private Config openstackConfig;
+	 
+	 protected NovaApi novaApi;
 	
 	public NovaProvider(Configured configuration, OpenStackCredentials credentials,
 			Config openstackConfig, LocalizationContext localizationContext) {
 		super(configuration, METADATA, localizationContext);
 		this.credentials = credentials;
 		this.openstackConfig = openstackConfig;
+		this.novaApi = buildNovaAPI();
 	}
+	
+	
+	private NovaApi buildNovaAPI(){
+		
+		String endpoint = credentials.getEndpoint();
+		String identity = credentials.getIdentity();
+		String credential = credentials.getCredential();
+		
+		return ContextBuilder.newBuilder(novaProvider)
+			  .endpoint(endpoint)
+              .credentials(identity, credential)
+              .buildApi(NovaApi.class);
+	}
+	
 
 	public Map<String, InstanceState> getInstanceState(
 			NovaInstanceTemplate arg0, Collection<String> arg1) {

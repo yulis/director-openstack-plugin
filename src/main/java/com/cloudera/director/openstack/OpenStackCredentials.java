@@ -6,9 +6,9 @@ public class OpenStackCredentials {
 	private final String identity;
 	private final String credential;
 
-	public OpenStackCredentials(String endpoint, String identity, String credential){
+	public OpenStackCredentials(String endpoint, String tenant, String user, String credential){
 		this.keystone_endpoint = endpoint;
-		this.identity = identity;
+		this.identity = tenant + ":" + user;
 		this.credential = credential;
 	}
 	
