@@ -6,8 +6,21 @@ import com.cloudera.director.spi.v1.model.ConfigurationPropertyToken;
 import com.cloudera.director.spi.v1.model.util.SimpleConfigurationPropertyBuilder;
 
 public enum NovaInstanceTemplateConfigurationProperty implements ConfigurationPropertyToken{
-	
-	
+	 
+	 /**
+	  * The availability zone.
+	  */
+     AVAILABILITY_ZONE(new SimpleConfigurationPropertyBuilder()
+    		 .configKey("availabilityZone")
+    		 .name("Availability zone")
+    		 .widget(ConfigurationProperty.Widget.OPENLIST)
+    		 .defaultDescription("The availability zone")
+    		 .hidden(true)
+    		 .build()),	
+     
+     /**
+      * The image ID.
+      */
      IMGER(new SimpleConfigurationPropertyBuilder()
     		 .configKey(ComputeInstanceTemplateConfigurationPropertyToken.IMAGE.unwrap().getConfigKey())
     		 .name("Image ID")
@@ -17,6 +30,32 @@ public enum NovaInstanceTemplateConfigurationProperty implements ConfigurationPr
     		 .defaultErrorMessage("Image ID is mandatory")
     		 .build()),
      
+     /**
+      * The IDs of the security groups (comma separated).
+      */
+     SECURITY_GROUP_IDS(new SimpleConfigurationPropertyBuilder()
+    		 .configKey("securityGroupIds")
+    		 .name("Security group IDs")
+    		 .widget(ConfigurationProperty.Widget.OPENLIST)
+    		 .required(true)
+    		 .defaultDescription("Specify the list of security group IDs.")
+    		 .defaultErrorMessage("Security group IDs are mandatory")
+    		 .build()),
+     
+     /**
+      * The ID of the subnet.
+      */
+     SUNET_ID(new SimpleConfigurationPropertyBuilder()
+    		 .configKey("subnetId")
+    		 .name("Subnet ID")
+    		 .required(true)
+    		 .defaultDescription("The subnet ID")
+    		 .defaultErrorMessage("Subnet ID is mandatory")
+    		 .build()),
+     
+     /**
+      * The instance type (e.g. m1.medium, m1.large, etc
+      */
      TYPE(new SimpleConfigurationPropertyBuilder()
     		 .configKey(ComputeInstanceTemplateConfigurationPropertyToken.TYPE.unwrap().getConfigKey())
     		 .name("Instance flavor")
