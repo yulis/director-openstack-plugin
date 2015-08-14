@@ -26,7 +26,6 @@ public class NovaInstance
 	
 	/**
 	 * Returns the list of display properties for an nova instance, including inherited properties.
-	 * @return the list of display properties for an nova instance, including inherited properties.
 	 */
 	public static List<DisplayProperty> getDisplayProperties() {return DISPLAY_PROPERTIES;}
 	

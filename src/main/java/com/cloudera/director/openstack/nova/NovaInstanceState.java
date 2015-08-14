@@ -27,6 +27,7 @@ public class NovaInstanceState extends AbstractInstanceState<Status> {
 		addInstanceState(map,Status.ACTIVE, InstanceStatus.RUNNING);
 		addInstanceState(map,Status.SHUTOFF, InstanceStatus.STOPPED);
 		addInstanceState(map,Status.DELETED, InstanceStatus.DELETED);
+		addInstanceState(map,Status.ERROR, InstanceStatus.FAILED);
 		addInstanceState(map,Status.UNKNOWN, InstanceStatus.UNKNOWN);
 		INSTANCE_STATE_MAP = Collections.unmodifiableMap(map);
 		
