@@ -81,6 +81,8 @@ public class OpenStackProvider extends AbstractCloudProvider {
 			return new NovaProvider(configuration, this.credentials, this.openstackConfig,
 			   getLocalizationContext());
 		}
+		
+		//TODO: add trove provider later
 		return null;
 	}
 
