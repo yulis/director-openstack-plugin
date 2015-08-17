@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
@@ -33,12 +35,15 @@ import com.cloudera.director.spi.v1.model.util.SimpleResourceTemplate;
 import com.cloudera.director.spi.v1.provider.ResourceProviderMetadata;
 import com.cloudera.director.spi.v1.provider.util.SimpleResourceProviderMetadata;
 import com.cloudera.director.spi.v1.util.ConfigurationPropertiesUtil;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 
 public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
 	
 	private static final String novaProvider = "openstack-nova";
@@ -116,22 +121,6 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 		return new NovaInstanceTemplate(name, configuration, tags, this.getLocalizationContext());
 	}
 
-	public Map<String, InstanceState> getInstanceState(NovaInstanceTemplate template, 
-			Collection<String> instanceIds) {
-		
-		Map<String, InstanceState> instanceStateByInstanceId =
-		        Maps.newHashMapWithExpectedSize(instanceIds.size());
-		
-		//TODO: add the try catch   
-		for (String currentId : instanceIds) {
-			Status instance_state =  novaApi.getServerApi(region).get(currentId).getStatus();
-			InstanceState instanceState = NovaInstanceState.fromInstanceStateName(instance_state);
-			instanceStateByInstanceId.put(currentId, instanceState);
-		}
-		
-		return instanceStateByInstanceId;
-	}
-
 	public void allocate(NovaInstanceTemplate template, Collection<String> instanceIds,
 			int minCount) throws InterruptedException {
 
@@ -142,6 +131,8 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 		
 		// Provisioning the cluster
 		ServerApi  serverApi = novaApi.getServerApi(region); 
+		
+		final Set<String> instancesWithNoPrivateIp = Sets.newHashSet();
 		
 		for (String currentId : instanceIds){
 			String decorateInstanceName = decorateInstanceName(template, currentId, templateLocalizationContext);
@@ -155,42 +146,115 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			//....
 			
 			
-			//Add Tags to the server for better search later
-			//Map<String, String> tags = new HashMap<String, String>();
-			//tags.put("DIRECTOR_ID", currentId);
-			//tags.put("", value);
-			
-			
+			// Tag all the new instances so that we can easily find them later on
+			Map<String, String> tags = new HashMap<String, String>();
+			tags.put("DIRECTOR_ID", currentId);
+			tags.put("INSTANCE_NAME", decorateInstanceName);
 			
 			CreateServerOptions createServerOps = new CreateServerOptions()
 								.networks(network)
 								.availabilityZone(azone)
-								.securityGroupNames(security_group);
-			
-			
+								.securityGroupNames(security_group)
+								.metadata(tags);
 			
 			ServerCreated currentServer = serverApi.create(decorateInstanceName, image, flavor, createServerOps);
 			
 			
-				
+			String novaInstanceId = currentServer.getId();			
+			while (novaInstanceId.isEmpty()){
+				TimeUnit.SECONDS.sleep(5);
+				novaInstanceId = currentServer.getId();
+			}
+			
+			if (serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
+		        instancesWithNoPrivateIp.add(novaInstanceId);
+			} else {
+		        LOG.info("<< Instance {} got IP {}", novaInstanceId, serverApi.get(novaInstanceId).getAccessIPv4());
+			}
 		}
 		
-		
-		
-		// Tag all the new instances so that we can easily find them later on
+		// Wait until all of them have a private IP (it should be pretty fast)
+		while (!instancesWithNoPrivateIp.isEmpty()) {
+			LOG.info(">> Waiting for {} instance(s) to get a private IP allocated",
+					instancesWithNoPrivateIp.size());
+		    
+			for (String novaInstanceId : instancesWithNoPrivateIp){
+				if (!serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
+					instancesWithNoPrivateIp.remove(novaInstanceId);
+				}
+			}
+			
+			if (!instancesWithNoPrivateIp.isEmpty()) {
+		        LOG.info("Waiting 5 seconds until next check, {} instance(s) still don't have an IP",
+		            instancesWithNoPrivateIp.size());
+
+		        TimeUnit.SECONDS.sleep(5);
+			}
+		      
+		}
 	}
 
 	public void delete(NovaInstanceTemplate template, Collection<String> virtualInstanceIds)
 			throws InterruptedException {
-		// TODO 
+		if ( virtualInstanceIds.isEmpty() ){
+			return;
+		}
+		
+		BiMap<String, String> virtualInstanceIdsByNovaInstanceId = 
+				getNovaInstanceIdsByVirtualInstanceId(virtualInstanceIds);
+		
+		ServerApi serverApi = novaApi.getServerApi(region);
+		
+		for (String currentId : virtualInstanceIds){
+			String novaInstanceId = virtualInstanceIdsByNovaInstanceId.get(currentId);
+			boolean deleted = serverApi.delete(novaInstanceId);
+			
+			if (!deleted){
+				LOG.info("Unable to terminate instance {}", novaInstanceId);
+			}
+		}
 		
 	}
 
 	public Collection<NovaInstance> find(NovaInstanceTemplate template,
 			Collection<String> virtualInstanceIds) throws InterruptedException {
-		// TODO 
-		return null;
+
+	    final Collection<NovaInstance> novaInstances =
+	            Lists.newArrayListWithExpectedSize(virtualInstanceIds.size());
+	    
+		BiMap<String, String> virtualInstanceIdsByNovaInstanceId = 
+				getNovaInstanceIdsByVirtualInstanceId(virtualInstanceIds);
+		
+		ServerApi serverApi = novaApi.getServerApi(region);
+		
+		for ( String currentId : virtualInstanceIds){
+			String novaInstanceId = virtualInstanceIdsByNovaInstanceId.get(currentId);
+			novaInstances.add(new NovaInstance(template, currentId, serverApi.get(novaInstanceId)));
+		}
+
+		return novaInstances;
 	}
+
+	public Map<String, InstanceState> getInstanceState(NovaInstanceTemplate template, 
+			Collection<String> virtualInstanceIds) {
+		
+		Map<String, InstanceState> instanceStateByInstanceId =
+		        Maps.newHashMapWithExpectedSize(virtualInstanceIds.size());
+		
+		BiMap<String, String> virtualInstanceIdsByNovaInstanceId = 
+				getNovaInstanceIdsByVirtualInstanceId(virtualInstanceIds);
+		
+		
+		//TODO: add the try catch   
+		for (String currentId : virtualInstanceIds) {
+			String novaInstanceId = virtualInstanceIdsByNovaInstanceId.get(currentId);
+			Status instance_state =  novaApi.getServerApi(region).get(novaInstanceId).getStatus();
+			InstanceState instanceState = NovaInstanceState.fromInstanceStateName(instance_state);
+			instanceStateByInstanceId.put(currentId, instanceState);
+		}
+		
+		return instanceStateByInstanceId;
+	}	
 
 	public Type getResourceType() {
 		return NovaInstance.TYPE;
@@ -202,5 +266,19 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 		return template.getConfigurationValue(
 		        InstanceTemplate.InstanceTemplateConfigurationPropertyToken.INSTANCE_NAME_PREFIX,
 		        templateLocalizationContext) + "-" + currentId;
+	}
+	
+	/**
+	 * Returns a map from virtual instance ID to corresponding instance ID for the specified
+	 * virtual instance IDs.
+	 *
+	 * @param virtualInstanceIds the virtual instance IDs
+	 * @return the map from virtual instance ID to corresponding Nova instance ID
+	 */
+	private BiMap<String, String> getNovaInstanceIdsByVirtualInstanceId(
+	      Collection<String> virtualInstanceIds) {
+		final BiMap<String, String> novaInstanceIdsByVirtualInstanceId = HashBiMap.create();
+		
+		return novaInstanceIdsByVirtualInstanceId;
 	}
 }
