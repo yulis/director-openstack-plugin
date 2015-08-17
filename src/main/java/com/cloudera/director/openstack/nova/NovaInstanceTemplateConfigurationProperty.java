@@ -21,7 +21,7 @@ public enum NovaInstanceTemplateConfigurationProperty implements ConfigurationPr
      /**
       * The image ID.
       */
-     IMGER(new SimpleConfigurationPropertyBuilder()
+     IMAGE(new SimpleConfigurationPropertyBuilder()
     		 .configKey(ComputeInstanceTemplateConfigurationPropertyToken.IMAGE.unwrap().getConfigKey())
     		 .name("Image ID")
     		 .required(true)
@@ -43,14 +43,14 @@ public enum NovaInstanceTemplateConfigurationProperty implements ConfigurationPr
     		 .build()),
      
      /**
-      * The ID of the subnet.
+      * The ID of the network.
       */
-     SUNET_ID(new SimpleConfigurationPropertyBuilder()
-    		 .configKey("subnetId")
-    		 .name("Subnet ID")
+     NETWORK_ID(new SimpleConfigurationPropertyBuilder()
+    		 .configKey("networkId")
+    		 .name("Network ID")
     		 .required(true)
-    		 .defaultDescription("The subnet ID")
-    		 .defaultErrorMessage("Subnet ID is mandatory")
+    		 .defaultDescription("The network ID")
+    		 .defaultErrorMessage("Network ID is mandatory")
     		 .build()),
      
      /**
