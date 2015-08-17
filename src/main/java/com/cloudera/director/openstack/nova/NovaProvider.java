@@ -9,10 +9,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
+import org.jclouds.openstack.nova.v2_0.domain.Server;
 import org.jclouds.openstack.nova.v2_0.domain.Server.Status;
 import org.jclouds.openstack.nova.v2_0.domain.ServerCreated;
 import org.jclouds.openstack.nova.v2_0.features.ServerApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
+import org.jclouds.openstack.v2_0.domain.PaginatedCollection;
+import org.jclouds.openstack.v2_0.options.PaginationOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +38,10 @@ import com.cloudera.director.spi.v1.model.util.SimpleResourceTemplate;
 import com.cloudera.director.spi.v1.provider.ResourceProviderMetadata;
 import com.cloudera.director.spi.v1.provider.util.SimpleResourceProviderMetadata;
 import com.cloudera.director.spi.v1.util.ConfigurationPropertiesUtil;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -278,6 +283,17 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 	private BiMap<String, String> getNovaInstanceIdsByVirtualInstanceId(
 	      Collection<String> virtualInstanceIds) {
 		final BiMap<String, String> novaInstanceIdsByVirtualInstanceId = HashBiMap.create();
+		for (String instanceName : virtualInstanceIds) {
+			ListMultimap<String, String> multimap = ArrayListMultimap.create();
+			multimap.put("name", instanceName) ;
+			ServerApi serverApi = novaApi.getServerApi(region);
+			PaginatedCollection<Server> servers = serverApi.listInDetail(PaginationOptions.Builder.queryParameters(multimap));
+			if (servers.isEmpty())
+				continue;
+			
+		    novaInstanceIdsByVirtualInstanceId.put(instanceName, servers.get(0).getId());	
+		 	
+		}
 		
 		return novaInstanceIdsByVirtualInstanceId;
 	}
