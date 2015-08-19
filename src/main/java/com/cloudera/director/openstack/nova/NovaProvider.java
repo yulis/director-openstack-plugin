@@ -49,7 +49,7 @@ import com.typesafe.config.Config;
 
 public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
+//	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
 	
 	private static final String novaProvider = "openstack-nova";
 	
@@ -173,15 +173,16 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			
 			if (serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
 		        instancesWithNoPrivateIp.add(novaInstanceId);
-			} else {
-		        LOG.info("<< Instance {} got IP {}", novaInstanceId, serverApi.get(novaInstanceId).getAccessIPv4());
+//			} else {
+//		        LOG.info("<< Instance {} got IP {}", novaInstanceId, serverApi.get(novaInstanceId).getAccessIPv4());
+//			}
 			}
 		}
 		
 		// Wait until all of them have a private IP (it should be pretty fast)
 		while (!instancesWithNoPrivateIp.isEmpty()) {
-			LOG.info(">> Waiting for {} instance(s) to get a private IP allocated",
-					instancesWithNoPrivateIp.size());
+//			LOG.info(">> Waiting for {} instance(s) to get a private IP allocated",
+//					instancesWithNoPrivateIp.size());
 		    
 			for (String novaInstanceId : instancesWithNoPrivateIp){
 				if (!serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
@@ -190,8 +191,8 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			}
 			
 			if (!instancesWithNoPrivateIp.isEmpty()) {
-		        LOG.info("Waiting 5 seconds until next check, {} instance(s) still don't have an IP",
-		            instancesWithNoPrivateIp.size());
+//		        LOG.info("Waiting 5 seconds until next check, {} instance(s) still don't have an IP",
+//		            instancesWithNoPrivateIp.size());
 
 		        TimeUnit.SECONDS.sleep(5);
 			}
@@ -215,7 +216,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			boolean deleted = serverApi.delete(novaInstanceId);
 			
 			if (!deleted){
-				LOG.info("Unable to terminate instance {}", novaInstanceId);
+//				LOG.info("Unable to terminate instance {}", novaInstanceId);
 			}
 		}
 		

@@ -185,6 +185,60 @@
                         </filter>
                     </filters>
                     <relocations>
+			<relocation><!-- com.google -->
+                            <pattern>com.google</pattern>
+                            <shadedPattern>${shade-prefix}.com.google</shadedPattern>
+                        </relocation>
+		        <relocation><!-- javax -->
+                            <pattern>javax</pattern>
+                            <shadedPattern>${shade-prefix}.javax</shadedPattern>
+                        </relocation>
+			<relocation><!-- org.aopalliance -->
+                            <pattern>org.aopalliance</pattern>
+                            <shadedPattern>${shade-prefix}.org.aopalliance</shadedPattern>
+                        </relocation>
+			<relocation><!-- org.nnsoft -->
+                            <pattern>org.nnsoft</pattern>
+                            <shadedPattern>${shade-prefix}.org.nnsoft</shadedPattern>
+                        </relocation>
+ 			<relocation><!-- net.schmizz -->
+                            <pattern>net.schmizz</pattern>
+                            <shadedPattern>${shade-prefix}.net.schmizz</shadedPattern>
+                        </relocation>
+			<relocation><!-- org.bouncycastle -->
+                            <pattern>org.bouncycastle</pattern>
+                            <shadedPattern>${shade-prefix}.org.bouncycastle</shadedPattern>
+                        </relocation>
+			<relocation><!-- com.jcraft -->
+                            <pattern>com.jcraft</pattern>
+                            <shadedPattern>${shade-prefix}.com.jcraft</shadedPattern>
+                        </relocation>
+			 <relocation><!-- com.sun -->
+                            <pattern>com.sun</pattern>
+                            <shadedPattern>${shade-prefix}.com.sun</shadedPattern>
+                        </relocation>
+			<relocation><!-- jclouds -->
+			    <pattern>org.jclouds</pattern>
+			    <shadedPattern>${shade-prefix}.org.jclouds</shadedPattern>
+			    <excludes>
+			    </excludes>
+			</relocation>
+			<relocation><!-- com.mysql.jdbc -->
+                            <pattern>com.mysql.jdbc</pattern>
+                            <shadedPattern>${shade-prefix}.com.mysql.jdbc</shadedPattern>
+                        </relocation>
+			<relocation><!-- ch.qos.logback -->
+                            <pattern>ch.qos.logback</pattern>
+                            <shadedPattern>${shade-prefix}.ch.qos.logback</shadedPattern>
+                        </relocation>
+			<relocation><!-- org.gjt.mm.mysql.Driver -->
+                            <pattern>org.gjt.mm.mysql.Driver</pattern>
+                            <shadedPattern>${shade-prefix}.org.gjt.mm.mysql.Driver</shadedPattern>
+                        </relocation>
+			<relocation><!-- org.slf4j.impl -->
+                            <pattern>org.slf4j.impl</pattern>
+                            <shadedPattern>${shade-prefix}.org.slf4j.impl</shadedPattern>
+                        </relocation>
                         <relocation><!-- jsr305 -->
                             <pattern>javax.annotation</pattern>
                             <shadedPattern>${shade-prefix}.javax.annotation</shadedPattern>

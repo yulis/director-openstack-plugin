@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
-import org.assertj.core.util.Maps;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
 
 import com.cloudera.director.spi.v1.compute.util.AbstractComputeInstance;
@@ -14,6 +13,7 @@ import com.cloudera.director.spi.v1.model.DisplayProperty;
 import com.cloudera.director.spi.v1.model.DisplayPropertyToken;
 import com.cloudera.director.spi.v1.model.util.SimpleDisplayPropertyBuilder;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 
 /**
