@@ -147,7 +147,7 @@
     	</dependency>
 
     </dependencies>
-<!--
+
     <repositories>
         <repository>
             <id>cloudera.repo</id>
@@ -155,7 +155,7 @@
             <name>Cloudera Repository</name>
         </repository>
     </repositories>
--->
+
     <build>
         <plugins>
             <plugin>
@@ -217,11 +217,9 @@
                             <pattern>com.sun</pattern>
                             <shadedPattern>${shade-prefix}.com.sun</shadedPattern>
                         </relocation>
-			<relocation><!-- jclouds -->
+			<relocation>
 			    <pattern>org.jclouds</pattern>
 			    <shadedPattern>${shade-prefix}.org.jclouds</shadedPattern>
-			    <excludes>
-			    </excludes>
 			</relocation>
 			<relocation><!-- com.mysql.jdbc -->
                             <pattern>com.mysql.jdbc</pattern>

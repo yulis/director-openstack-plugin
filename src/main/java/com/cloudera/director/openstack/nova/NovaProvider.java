@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.jclouds.ContextBuilder;
+import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
 import org.jclouds.openstack.nova.v2_0.domain.Server.Status;
@@ -41,15 +42,17 @@ import com.cloudera.director.spi.v1.util.ConfigurationPropertiesUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.inject.Module;
 import com.typesafe.config.Config;
 
 public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
 
-//	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
+	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
 	
 	private static final String novaProvider = "openstack-nova";
 	
@@ -111,6 +114,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 	
 	
 	private NovaApi buildNovaAPI(){	
+		Iterable<Module> modules = ImmutableSet.<Module>of(new SLF4JLoggingModule());
 		String endpoint = credentials.getEndpoint();
 		String identity = credentials.getIdentity();
 		String credential = credentials.getCredential();
@@ -118,6 +122,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 		return ContextBuilder.newBuilder(novaProvider)
 			  .endpoint(endpoint)
               .credentials(identity, credential)
+              .modules(modules)
               .buildApi(NovaApi.class);
 	}
 	
@@ -173,16 +178,15 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			
 			if (serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
 		        instancesWithNoPrivateIp.add(novaInstanceId);
-//			} else {
-//		        LOG.info("<< Instance {} got IP {}", novaInstanceId, serverApi.get(novaInstanceId).getAccessIPv4());
-//			}
+			} else {
+		        LOG.info("<< Instance {} got IP {}", novaInstanceId, serverApi.get(novaInstanceId).getAccessIPv4());
 			}
 		}
 		
 		// Wait until all of them have a private IP (it should be pretty fast)
 		while (!instancesWithNoPrivateIp.isEmpty()) {
-//			LOG.info(">> Waiting for {} instance(s) to get a private IP allocated",
-//					instancesWithNoPrivateIp.size());
+			LOG.info(">> Waiting for {} instance(s) to get a private IP allocated",
+					instancesWithNoPrivateIp.size());
 		    
 			for (String novaInstanceId : instancesWithNoPrivateIp){
 				if (!serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
@@ -191,8 +195,8 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			}
 			
 			if (!instancesWithNoPrivateIp.isEmpty()) {
-//		        LOG.info("Waiting 5 seconds until next check, {} instance(s) still don't have an IP",
-//		            instancesWithNoPrivateIp.size());
+		        LOG.info("Waiting 5 seconds until next check, {} instance(s) still don't have an IP",
+		            instancesWithNoPrivateIp.size());
 
 		        TimeUnit.SECONDS.sleep(5);
 			}
@@ -216,7 +220,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			boolean deleted = serverApi.delete(novaInstanceId);
 			
 			if (!deleted){
-//				LOG.info("Unable to terminate instance {}", novaInstanceId);
+				LOG.info("Unable to terminate instance {}", novaInstanceId);
 			}
 		}
 		
