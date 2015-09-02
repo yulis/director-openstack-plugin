@@ -3,3 +3,4 @@ target/*
 /target/
 lib/*
 /lib/
+dependency-reduced-pom.xml

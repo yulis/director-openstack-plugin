@@ -8,8 +8,10 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.jclouds.ContextBuilder;
+import org.jclouds.apis.ApiMetadata;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
+import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
 import org.jclouds.openstack.nova.v2_0.domain.Server.Status;
 import org.jclouds.openstack.nova.v2_0.domain.ServerCreated;
@@ -54,7 +56,9 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 
 	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
 	
-	private static final String novaProvider = "openstack-nova";
+	//private static final String novaProvider = "openstack-nova";
+	
+	private static final ApiMetadata NOVA_API_METADATA = new NovaApiMetadata();
 	
 	/**
 	 * The provider configuration properties.
@@ -119,7 +123,8 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 		String identity = credentials.getIdentity();
 		String credential = credentials.getCredential();
 		
-		return ContextBuilder.newBuilder(novaProvider)
+		
+		return ContextBuilder.newBuilder(NOVA_API_METADATA)
 			  .endpoint(endpoint)
               .credentials(identity, credential)
               .modules(modules)
