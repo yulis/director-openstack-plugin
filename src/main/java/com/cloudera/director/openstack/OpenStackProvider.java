@@ -7,10 +7,12 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.cloudera.director.openstack.nova.NovaProvider;
+import com.cloudera.director.openstack.nova.NovaProviderConfigurationValidator;
 import com.cloudera.director.spi.v1.model.ConfigurationProperty;
 import com.cloudera.director.spi.v1.model.ConfigurationValidator;
 import com.cloudera.director.spi.v1.model.Configured;
 import com.cloudera.director.spi.v1.model.LocalizationContext;
+import com.cloudera.director.spi.v1.model.util.CompositeConfigurationValidator;
 import com.cloudera.director.spi.v1.provider.CloudProviderMetadata;
 import com.cloudera.director.spi.v1.provider.CredentialsProvider;
 import com.cloudera.director.spi.v1.provider.ResourceProvider;
@@ -68,7 +70,15 @@ public class OpenStackProvider extends AbstractCloudProvider {
 	@Override
 	protected ConfigurationValidator getResourceProviderConfigurationValidator(
 	      ResourceProviderMetadata resourceProviderMetadata) {
-		return null;
+		ConfigurationValidator providerSpecificValidator;
+		if ( resourceProviderMetadata.getId().equals(NovaProvider.METADATA.getId()) ){
+			 providerSpecificValidator = new NovaProviderConfigurationValidator();
+		}else {
+		      throw new IllegalArgumentException("No such provider: " + resourceProviderMetadata.getId());
+	    }
+		
+		return new CompositeConfigurationValidator(METADATA.getProviderConfigurationValidator(),
+				providerSpecificValidator);
 	}
 	
 	@SuppressWarnings("rawtypes")

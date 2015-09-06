@@ -1,10 +1,10 @@
 package com.cloudera.director.openstack.nova;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
-import org.assertj.core.util.Maps;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
 
 import com.cloudera.director.spi.v1.compute.util.AbstractComputeInstance;
@@ -12,6 +12,8 @@ import com.cloudera.director.spi.v1.util.DisplayPropertiesUtil;
 import com.cloudera.director.spi.v1.model.DisplayProperty;
 import com.cloudera.director.spi.v1.model.DisplayPropertyToken;
 import com.cloudera.director.spi.v1.model.util.SimpleDisplayPropertyBuilder;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 
 /**
@@ -170,8 +172,9 @@ public class NovaInstance
 	public static final Type TYPE = new ResourceType("NovaInstance");	
 	
 	protected NovaInstance(NovaInstanceTemplate template, String instanceId,
-			InetAddress privateIpAddress) {
-		super(template, instanceId, privateIpAddress);
+			Server novaInstance) {
+		super(template, instanceId, getPrivateIpAddress(novaInstance));
+		//get the HypervisorVirtType
 		
 	}
 
@@ -185,5 +188,23 @@ public class NovaInstance
 		}
 		return properties;
 	}
+	
+	/**
+	 * Returns the private IP address of the specified Nova instance.
+	 *
+	 * @param instance the instance
+	 * @return the private IP address of the specified Nova instance
+	 * @throws IllegalArgumentException if the instance does not have a valid private IP address
+	 */
+	private static InetAddress getPrivateIpAddress(Server server) {
+	    Preconditions.checkNotNull(server, "instance is null");
+	    InetAddress privateIpAddress;
+	    try {
+	      privateIpAddress = InetAddress.getByName(server.getAccessIPv4());
+	    } catch (UnknownHostException e) {
+	      throw new IllegalArgumentException("Invalid private IP address", e);
+	    }
+	    return privateIpAddress;
+	}	
 
 }
