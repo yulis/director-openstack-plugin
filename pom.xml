@@ -35,12 +35,22 @@
             <version>${director-spi-v1.version}</version>
             <scope>provided</scope>
         </dependency>
+	<dependency>
+	    <groupId>xerces</groupId>
+	    <artifactId>xercesImpl</artifactId>
+	    <version>2.11.0</version>
+	</dependency>
 
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>${jsr305.version}</version>
         </dependency>
+	<dependency>
+		<groupId>javax.xml.bind</groupId>
+		<artifactId>jaxb-api</artifactId>
+		<version>2.1</version>
+	</dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -75,6 +85,12 @@
 		-->
 		
 		<!-- jclouds dependencies -->
+        <dependency>
+	<groupId>org.apache.jclouds</groupId>
+	<artifactId>jclouds-core</artifactId>
+	<version>1.9.1</version>
+	</dependency>
+
     	<dependency>
       		<groupId>org.apache.jclouds.driver</groupId>
       		<artifactId>jclouds-slf4j</artifactId>
@@ -170,8 +186,7 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/license/**</exclude>
-                                <exclude>META-INF/*</exclude>
-                                <exclude>META-INF/maven/**</exclude>
+				<exclude>META-INF/*</exclude>
                                 <exclude>LICENSE</exclude>
                                 <exclude>NOTICE</exclude>
                                 <exclude>/*.txt</exclude>
@@ -180,6 +195,14 @@
                         </filter>
                     </filters>
                     <relocations>
+                        <relocation>
+                       	     <pattern>org.w3c</pattern>
+                       	     <shadedPattern>${shade-prefix}.w3c</shadedPattern>
+                         </relocation>
+                        <relocation>
+                       	     <pattern>org.xml</pattern>
+                       	     <shadedPattern>${shade-prefix}.org.xml</shadedPattern>
+                         </relocation>
                         <relocation>
                        	     <pattern>org.apache</pattern>
                        	     <shadedPattern>${shade-prefix}.org.apache</shadedPattern>
@@ -193,8 +216,24 @@
                             <shadedPattern>${shade-prefix}.com.google</shadedPattern>
                         </relocation>
 		        <relocation><!-- javax -->
-                            <pattern>javax</pattern>
-                            <shadedPattern>${shade-prefix}.javax</shadedPattern>
+                            <pattern>javax.activation</pattern>
+                            <shadedPattern>${shade-prefix}.javax.activation</shadedPattern>
+                        </relocation>
+		        <relocation><!-- javax -->
+                            <pattern>javax.ws.rs</pattern>
+                            <shadedPattern>${shade-prefix}.javax.ws.rs</shadedPattern>
+                        </relocation>
+		        <relocation><!-- javax -->
+                            <pattern>javax.inject</pattern>
+                            <shadedPattern>${shade-prefix}.javax.inject</shadedPattern>
+                        </relocation>
+		        <relocation><!-- javax -->
+                            <pattern>javax.annotation</pattern>
+                            <shadedPattern>${shade-prefix}.javax.annotation</shadedPattern>
+                        </relocation>
+		        <relocation><!-- javax -->
+                            <pattern>javax.xml</pattern>
+                            <shadedPattern>${shade-prefix}.javax.xml</shadedPattern>
                         </relocation>
 			<relocation><!-- org.aopalliance -->
                             <pattern>org.aopalliance</pattern>
@@ -239,10 +278,6 @@
 			<relocation><!-- org.slf4j.impl -->
                             <pattern>org.slf4j.impl</pattern>
                             <shadedPattern>${shade-prefix}.org.slf4j.impl</shadedPattern>
-                        </relocation>
-                        <relocation><!-- jsr305 -->
-                            <pattern>javax.annotation</pattern>
-                            <shadedPattern>${shade-prefix}.javax.annotation</shadedPattern>
                         </relocation>
                         <relocation><!-- guava -->
                             <pattern>com.google.common</pattern>

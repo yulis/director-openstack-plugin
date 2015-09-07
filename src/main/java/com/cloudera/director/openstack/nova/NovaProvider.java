@@ -181,7 +181,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 				novaInstanceId = currentServer.getId();
 			}
 			
-			if (serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
+			if (serverApi.get(novaInstanceId).getAccessIPv4() == null) {
 		        instancesWithNoPrivateIp.add(novaInstanceId);
 			} else {
 		        LOG.info("<< Instance {} got IP {}", novaInstanceId, serverApi.get(novaInstanceId).getAccessIPv4());
@@ -194,7 +194,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 					instancesWithNoPrivateIp.size());
 		    
 			for (String novaInstanceId : instancesWithNoPrivateIp){
-				if (!serverApi.get(novaInstanceId).getAccessIPv4().isEmpty()) {
+				if (serverApi.get(novaInstanceId).getAccessIPv4() != null) {
 					instancesWithNoPrivateIp.remove(novaInstanceId);
 				}
 			}
