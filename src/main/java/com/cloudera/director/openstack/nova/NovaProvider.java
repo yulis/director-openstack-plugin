@@ -181,7 +181,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 				novaInstanceId = currentServer.getId();
 			}
 			
-			if (serverApi.get(novaInstanceId).getAccessIPv4() == null) {
+			if (serverApi.get(novaInstanceId).getAddresses() == null) {
 		        instancesWithNoPrivateIp.add(novaInstanceId);
 			} else {
 		        LOG.info("<< Instance {} got IP {}", novaInstanceId, serverApi.get(novaInstanceId).getAccessIPv4());
@@ -194,7 +194,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 					instancesWithNoPrivateIp.size());
 		    
 			for (String novaInstanceId : instancesWithNoPrivateIp){
-				if (serverApi.get(novaInstanceId).getAccessIPv4() != null) {
+				if (serverApi.get(novaInstanceId).getAddresses() != null) {
 					instancesWithNoPrivateIp.remove(novaInstanceId);
 				}
 			}
@@ -253,8 +253,8 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 	public Map<String, InstanceState> getInstanceState(NovaInstanceTemplate template, 
 			Collection<String> virtualInstanceIds) {
 		
-		Map<String, InstanceState> instanceStateByInstanceId =
-		        Maps.newHashMapWithExpectedSize(virtualInstanceIds.size());
+		Map<String, InstanceState> instanceStateByInstanceId = new HashMap<String, InstanceState >();
+		        //Maps.newHashMapWithExpectedSize(virtualInstanceIds.size());
 		
 		BiMap<String, String> virtualInstanceIdsByNovaInstanceId = 
 				getNovaInstanceIdsByVirtualInstanceId(virtualInstanceIds);
@@ -263,6 +263,8 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 		//TODO: add the try catch   
 		for (String currentId : virtualInstanceIds) {
 			String novaInstanceId = virtualInstanceIdsByNovaInstanceId.get(currentId);
+			if(novaInstanceId == null)
+				continue;
 			Status instance_state =  novaApi.getServerApi(region).get(novaInstanceId).getStatus();
 			InstanceState instanceState = NovaInstanceState.fromInstanceStateName(instance_state);
 			instanceStateByInstanceId.put(currentId, instanceState);
