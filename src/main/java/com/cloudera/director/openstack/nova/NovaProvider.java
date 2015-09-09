@@ -47,7 +47,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Module;
 import com.typesafe.config.Config;
@@ -55,8 +54,6 @@ import com.typesafe.config.Config;
 public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NovaProvider.class);
-	
-	//private static final String novaProvider = "openstack-nova";
 	
 	private static final ApiMetadata NOVA_API_METADATA = new NovaApiMetadata();
 	
@@ -263,8 +260,11 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 		//TODO: add the try catch   
 		for (String currentId : virtualInstanceIds) {
 			String novaInstanceId = virtualInstanceIdsByNovaInstanceId.get(currentId);
-			if(novaInstanceId == null)
-				continue;
+			if(novaInstanceId == null){
+				InstanceState instanceState_del = NovaInstanceState.fromInstanceStateName(Status.DELETED);
+				instanceStateByInstanceId.put(currentId, instanceState_del);
+				continue;	
+			}
 			Status instance_state =  novaApi.getServerApi(region).get(novaInstanceId).getStatus();
 			InstanceState instanceState = NovaInstanceState.fromInstanceStateName(instance_state);
 			instanceStateByInstanceId.put(currentId, instanceState);
