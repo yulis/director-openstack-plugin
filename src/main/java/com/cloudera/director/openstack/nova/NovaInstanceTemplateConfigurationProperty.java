@@ -54,17 +54,14 @@ public enum NovaInstanceTemplateConfigurationProperty implements ConfigurationPr
     		 .build()),
      
      /**
-      * The instance type (e.g. m1.medium, m1.large, etc
+      * The instance type (e.g. m1.medium, m1.large, etc, input must be the ID.
       */
      TYPE(new SimpleConfigurationPropertyBuilder()
     		 .configKey(ComputeInstanceTemplateConfigurationPropertyToken.TYPE.unwrap().getConfigKey())
-    		 .name("Instance flavor")
+    		 .name("Instance flavor ID")
     		 .required(true)
-    		 .widget(ConfigurationProperty.Widget.OPENLIST)
     		 .defaultDescription("Size of image to launch")
-    		 .defaultErrorMessage("Instance flavor is mandatory")
-    		 .addValidValues(
-    				 "m1.tiny","m1.small","m1.medium","m1.large","m1.xlarge")
+    		 .defaultErrorMessage("Instance flavor ID is mandatory")
     		 .build()),
      
      /**
