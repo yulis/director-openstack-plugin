@@ -72,7 +72,7 @@ public class OpenStackProvider extends AbstractCloudProvider {
 	      ResourceProviderMetadata resourceProviderMetadata) {
 		ConfigurationValidator providerSpecificValidator;
 		if ( resourceProviderMetadata.getId().equals(NovaProvider.METADATA.getId()) ){
-			 providerSpecificValidator = new NovaProviderConfigurationValidator();
+			 providerSpecificValidator = new NovaProviderConfigurationValidator(credentials);
 		}else {
 		      throw new IllegalArgumentException("No such provider: " + resourceProviderMetadata.getId());
 	    }
