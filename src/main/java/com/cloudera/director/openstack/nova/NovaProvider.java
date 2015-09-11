@@ -26,7 +26,7 @@ import static com.cloudera.director.openstack.nova.NovaProviderConfigurationProp
 import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.IMAGE;
 import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.NETWORK_ID;
 import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.TYPE;
-import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.SECURITY_GROUP_IDS;
+import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.SECURITY_GROUP_NAMES;
 import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.AVAILABILITY_ZONE;
 
 import com.cloudera.director.openstack.OpenStackCredentials;
@@ -152,7 +152,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			String flavor = template.getConfigurationValue(TYPE, templateLocalizationContext);
 			String network = template.getConfigurationValue(NETWORK_ID, templateLocalizationContext);
 			String azone = template.getConfigurationValue(AVAILABILITY_ZONE, templateLocalizationContext);
-			String security_group = template.getConfigurationValue(SECURITY_GROUP_IDS, templateLocalizationContext);
+			String security_group = template.getConfigurationValue(SECURITY_GROUP_NAMES, templateLocalizationContext);
 			
 			//TODO: consider the block device mapping
 			//....

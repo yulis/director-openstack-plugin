@@ -33,13 +33,13 @@ public enum NovaInstanceTemplateConfigurationProperty implements ConfigurationPr
      /**
       * The IDs of the security groups (comma separated).
       */
-     SECURITY_GROUP_IDS(new SimpleConfigurationPropertyBuilder()
-    		 .configKey("securityGroupIds")
-    		 .name("Security group IDs")
+     SECURITY_GROUP_NAMES(new SimpleConfigurationPropertyBuilder()
+    		 .configKey("securityGroupNames")
+    		 .name("Security group names")
     		 .widget(ConfigurationProperty.Widget.OPENLIST)
     		 .required(true)
-    		 .defaultDescription("Specify the list of security group IDs.")
-    		 .defaultErrorMessage("Security group IDs are mandatory")
+    		 .defaultDescription("Specify the list of security group names.")
+    		 .defaultErrorMessage("Security group names are mandatory")
     		 .build()),
      
      /**
