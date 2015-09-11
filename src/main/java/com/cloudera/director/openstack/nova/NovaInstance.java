@@ -2,9 +2,11 @@ package com.cloudera.director.openstack.nova;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jclouds.openstack.nova.v2_0.domain.Address;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
 
 import com.cloudera.director.spi.v1.compute.util.AbstractComputeInstance;
@@ -200,7 +202,9 @@ public class NovaInstance
 	    Preconditions.checkNotNull(server, "instance is null");
 	    InetAddress privateIpAddress;
 	    try {
-	      privateIpAddress = InetAddress.getByName(server.getAccessIPv4());
+	    	Iterator<Address> iterator = server.getAddresses().values().iterator();
+	    	Address address = iterator.next();
+	      privateIpAddress = InetAddress.getByName(address.getAddr());
 	    } catch (UnknownHostException e) {
 	      throw new IllegalArgumentException("Invalid private IP address", e);
 	    }
