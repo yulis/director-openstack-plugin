@@ -25,7 +25,7 @@ public class NovaProviderConfigurationValidator implements ConfigurationValidato
 	
 	private static final Logger LOG = LoggerFactory.getLogger(NovaProviderConfigurationValidator.class);
 	
-	private static final String REGION_NOT_FOUND_MSG = "Region '%s' not found for project '%s'.";
+	private static final String REGION_NOT_FOUND_MSG = "Region '%s' not found.";
 	
 	private OpenStackCredentials credentials;
 	
