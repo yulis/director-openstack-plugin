@@ -114,7 +114,7 @@ public class NovaInstance
 				.build()) {
 			@Override
 			protected String getPropertyValue(Server instance) {
-				return instance.getAccessIPv4();
+				return NovaInstance.getPrivateIpAddress(instance).getHostAddress();
 			}
 		},
 		
@@ -125,7 +125,7 @@ public class NovaInstance
 				.build()) {
 			@Override
 			protected String getPropertyValue(Server instance) {
-				return instance.getAccessIPv4();
+				return NovaInstance.getPrivateIpAddress(instance).getHostAddress();
 			}
 		},
 		
@@ -136,7 +136,7 @@ public class NovaInstance
 				.build()) {
 			@Override
 			protected String getPropertyValue(Server instance) {
-				return instance.getAccessIPv4();
+				return new String("networkID");
 			}
 		}
 		
@@ -205,6 +205,7 @@ public class NovaInstance
 	    	Iterator<Address> iterator = server.getAddresses().values().iterator();
 	    	Address address = iterator.next();
 	      privateIpAddress = InetAddress.getByName(address.getAddr());
+	      System.out.println(privateIpAddress.getHostAddress());
 	    } catch (UnknownHostException e) {
 	      throw new IllegalArgumentException("Invalid private IP address", e);
 	    }
