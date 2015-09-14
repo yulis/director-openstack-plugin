@@ -114,7 +114,7 @@ public class NovaInstance
 				.build()) {
 			@Override
 			protected String getPropertyValue(Server instance) {
-				return instance.getAccessIPv4();
+				return NovaInstance.getPrivateIpAddress(instance).getHostAddress();
 			}
 		},
 		
@@ -125,7 +125,7 @@ public class NovaInstance
 				.build()) {
 			@Override
 			protected String getPropertyValue(Server instance) {
-				return instance.getAccessIPv4();
+				return NovaInstance.getPrivateIpAddress(instance).getHostAddress();
 			}
 		},
 		
@@ -136,7 +136,7 @@ public class NovaInstance
 				.build()) {
 			@Override
 			protected String getPropertyValue(Server instance) {
-				return instance.getAccessIPv4();
+				return new String("networkID");
 			}
 		}
 		
