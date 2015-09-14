@@ -3,4 +3,8 @@ target/*
 /target/
 lib/*
 /lib/
+.classpath
+.project
+.settings/*
+/.settings/
 dependency-reduced-pom.xml
