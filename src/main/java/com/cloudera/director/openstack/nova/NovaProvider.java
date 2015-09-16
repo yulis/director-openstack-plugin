@@ -1,12 +1,16 @@
 package com.cloudera.director.openstack.nova;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import com.cloudera.director.openstack.OpenStackCredentials;
+import com.cloudera.director.spi.v1.compute.util.AbstractComputeProvider;
+import com.cloudera.director.spi.v1.model.*;
+import com.cloudera.director.spi.v1.model.Resource.Type;
+import com.cloudera.director.spi.v1.model.util.SimpleResourceTemplate;
+import com.cloudera.director.spi.v1.provider.ResourceProviderMetadata;
+import com.cloudera.director.spi.v1.provider.util.SimpleResourceProviderMetadata;
+import com.cloudera.director.spi.v1.util.ConfigurationPropertiesUtil;
+import com.google.common.collect.*;
+import com.google.inject.Module;
+import com.typesafe.config.Config;
 import org.jclouds.ContextBuilder;
 import org.jclouds.apis.ApiMetadata;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
@@ -22,34 +26,11 @@ import org.jclouds.openstack.v2_0.options.PaginationOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.cloudera.director.openstack.nova.NovaProviderConfigurationProperty.REGION;
-import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.IMAGE;
-import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.NETWORK_ID;
-import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.TYPE;
-import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.SECURITY_GROUP_NAMES;
-import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.AVAILABILITY_ZONE;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-import com.cloudera.director.openstack.OpenStackCredentials;
-import com.cloudera.director.spi.v1.compute.util.AbstractComputeProvider;
-import com.cloudera.director.spi.v1.model.ConfigurationProperty;
-import com.cloudera.director.spi.v1.model.Configured;
-import com.cloudera.director.spi.v1.model.InstanceState;
-import com.cloudera.director.spi.v1.model.InstanceTemplate;
-import com.cloudera.director.spi.v1.model.LocalizationContext;
-import com.cloudera.director.spi.v1.model.Resource.Type;
-import com.cloudera.director.spi.v1.model.util.SimpleResourceTemplate;
-import com.cloudera.director.spi.v1.provider.ResourceProviderMetadata;
-import com.cloudera.director.spi.v1.provider.util.SimpleResourceProviderMetadata;
-import com.cloudera.director.spi.v1.util.ConfigurationPropertiesUtil;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.inject.Module;
-import com.typesafe.config.Config;
+import static com.cloudera.director.openstack.nova.NovaInstanceTemplateConfigurationProperty.*;
+import static com.cloudera.director.openstack.nova.NovaProviderConfigurationProperty.REGION;
 
 public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInstanceTemplate> {
 
@@ -153,6 +134,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 			String network = template.getConfigurationValue(NETWORK_ID, templateLocalizationContext);
 			String azone = template.getConfigurationValue(AVAILABILITY_ZONE, templateLocalizationContext);
 			String security_group = template.getConfigurationValue(SECURITY_GROUP_NAMES, templateLocalizationContext);
+            String keyPairName = template.getConfigurationValue(KEY_NAME, templateLocalizationContext);
 			
 			//TODO: consider the block device mapping
 			//....
@@ -167,6 +149,7 @@ public class NovaProvider extends AbstractComputeProvider<NovaInstance, NovaInst
 								.networks(network)
 								.availabilityZone(azone)
 								.securityGroupNames(security_group)
+                                .keyPairName(keyPairName)
 								.metadata(tags);
 			
 			ServerCreated currentServer = serverApi.create(decorateInstanceName, image, flavor, createServerOps);

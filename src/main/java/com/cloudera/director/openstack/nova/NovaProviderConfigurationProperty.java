@@ -11,7 +11,7 @@ public enum NovaProviderConfigurationProperty implements ConfigurationPropertyTo
 	 REGION(new SimpleConfigurationPropertyBuilder()
      .configKey("region")
      .name("Region")
-     .defaultValue("regionOne")
+     .defaultValue("RegionOne")
      .defaultDescription("Region to target for deployment.")
      .build());
 

@@ -73,7 +73,6 @@ public enum NovaInstanceTemplateConfigurationProperty implements ConfigurationPr
     		 .required(false)
     		 .widget(ConfigurationProperty.Widget.TEXT)
     		 .defaultDescription("The Nova key pair")
-    		 .hidden(true)
     		 .build());
 	/**
 	 * The configuration property.
